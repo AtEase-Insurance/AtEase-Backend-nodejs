@@ -1,0 +1,31 @@
+[
+  {
+    "title": "Mr",
+    "firstname": "John",
+    "middlename": "Jamie",
+    "lastname": "Doe",
+    "BVN": "1010101010101",
+    "residentialAddress": {
+      "street": "",
+      "area": ""
+    },
+    "ID-type": "",
+    "ID-no": "",
+    "phoneNo": "",
+    "dateOfBirth": "",
+    "email": "",
+    "guarantorDetails": {
+      "gFirstname": "",
+      "gLastname": "",
+      "gPhoneNo": "",
+      "gAddress": ""
+    },
+    "nextOfKinDetails": {
+      "kFirstname": "",
+      "kLastname": "",
+      "kPhoneNo": "",
+      "kAddress": "",
+      "kRelationship": ""
+    }
+  }
+]

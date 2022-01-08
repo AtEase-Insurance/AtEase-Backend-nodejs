@@ -139,7 +139,7 @@ exports.logIn = async (req, res) => {
   res.cookie("auth_token", token).status(200).json({
     status: "SUCCESS",
     message: "Logged in successfully!",
-    user: user._id,
+    user: user,
   });
 };
 

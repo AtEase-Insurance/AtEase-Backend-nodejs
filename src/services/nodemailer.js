@@ -31,7 +31,7 @@ exports.testNodemailer = transporter.verify((error, success) => {
 // send verification email
 exports.sendVerificationEmail = ({ _id, email }, res) => {
   // url to be used in the email
-  const currentUrl = "https://atease-insurance.herokuapp.com/";
+  const currentUrl = "https://atease-insurance.herokuapp.com";
   const uniqueString = uuidv4() + _id;
 
   // mail options

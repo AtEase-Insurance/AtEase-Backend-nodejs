@@ -26,6 +26,10 @@ const userSchema = new Schema({
     minlength: 6,
     maxlength: 128,
   },
+  phoneNo: {
+    type: String,
+    default: "",
+  },
   dateSignedUp: {
     type: Date,
     default: Date.now(),

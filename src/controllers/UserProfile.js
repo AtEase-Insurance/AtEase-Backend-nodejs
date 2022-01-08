@@ -25,7 +25,10 @@ exports.editProfile = async (req, res) => {
     if (phoneNo) user.phoneNo = phoneNo;
 
     await user.save();
-    res.send(user);
+    res.status(200).json({
+      status: "SUCCESS",
+      user,
+    });
   } catch (err) {
     res.status(500).json(err);
     console.log(err);

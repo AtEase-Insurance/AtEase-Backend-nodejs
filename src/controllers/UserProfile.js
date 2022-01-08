@@ -18,7 +18,7 @@ exports.editProfile = async (req, res) => {
     let user = await User.findById(req.user.id);
 
     // Limit user profile info changes via this route to only the following
-    const { ...name } = req.body;
+    const { phoneNo, address } = req.body;
 
     // User can update or leave out any of these fields
     if (address) user.address = address;

@@ -3,14 +3,9 @@ const Joi = require("joi");
 // User SignUp
 exports.signUp = (user) => {
   const schema = Joi.object({
-    title: Joi.string().min(2).max(10).required(),
     firstname: Joi.string().min(2).max(50).required(),
-    middlename: Joi.string().min(2).max(50).required(),
     surname: Joi.string().min(2).max(50).required(),
-    BVN: Joi.string().min(11).max(11).required(),
     email: Joi.string().min(5).max(255).required().email(),
-    phoneNo: Joi.string().min(2).max(24).required(),
-    altPhoneNo: Joi.string().min(2).max(24).required(),
     password: Joi.string().min(8).max(255).required(),
     confirmPassword: Joi.string().required().valid(Joi.ref("password")),
   });

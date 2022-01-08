@@ -7,6 +7,7 @@ const auth = require("../middlewares/Auth");
 
 // Basic Routes (Unprotected)
 router.post("/signup", userBasic.signUp);
+router.get("/verify/:userId/:uniqueString", userBasic.verifyEmail);
 router.post("/login", userBasic.logIn);
 router.get("/logout", userBasic.logOut);
 

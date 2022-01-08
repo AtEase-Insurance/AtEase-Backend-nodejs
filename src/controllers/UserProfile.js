@@ -6,7 +6,10 @@ const userValidation = require("../validations/User");
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    res.json(user);
+    res.status(200).json({
+      status: "SUCCESS",
+      user: user,
+    });
   } catch (err) {
     console.log(err);
   }
@@ -26,7 +29,7 @@ exports.editProfile = async (req, res) => {
     await user.save();
     res.status(200).json({
       status: "SUCCESS",
-      user,
+      user: user,
     });
   } catch (err) {
     res.status(500).json(err);
@@ -48,8 +51,8 @@ exports.changePassword = async (req, res) => {
   );
   if (!validPassword)
     return res.status(400).json({
-      success: false,
-      msg: "Invalid Old Password.",
+      status: "FAILED",
+      message: "Invalid Old Password.",
     });
 
   // Hash new password and replace
@@ -58,7 +61,7 @@ exports.changePassword = async (req, res) => {
   await user.save();
 
   res.status(200).json({
-    status: "success",
+    status: "SUCCESS",
     msg: "Your password has been updated!",
     user,
   });

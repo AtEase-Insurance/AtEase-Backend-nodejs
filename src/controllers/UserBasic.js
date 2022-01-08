@@ -45,13 +45,6 @@ exports.signUp = async (req, res) => {
 
     // send verification email
     sendVerificationEmail(user, res);
-
-    // // Return new user account details
-    // res.status(201).json({
-    //   success: true,
-    //   msg: `Account has been created successfully.`,
-    //   data: user,
-    // });
   } catch (err) {
     res.status(500).json(err);
     console.log(err);
@@ -144,9 +137,9 @@ exports.logIn = async (req, res) => {
 
   // Assign token and send user details
   res.cookie("auth_token", token).status(200).json({
-    success: true,
-    msg: "Logged in successfully!",
-    userDetails: user,
+    status: "SUCCESS",
+    message: "Logged in successfully!",
+    user: user._id,
   });
 };
 
@@ -155,5 +148,5 @@ exports.logOut = (req, res) => {
   return res
     .clearCookie("auth_token")
     .status(200)
-    .json({ success: true, msg: "Successfully logged out!" });
+    .json({ status: "SUCCESS", message: "Logged out successfully!" });
 };

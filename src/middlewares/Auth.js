@@ -6,13 +6,13 @@ const auth = (req, res, next) => {
   if (!token)
     return res
       .status(403)
-      .json({ success: false, msg: "Access Denied! Sign In!" });
+      .json({ status: "FAILED", message: "Access Denied! Sign In!" });
 
   try {
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verified;
   } catch (err) {
-    return res.status(403).send({ sucess: false, msg: "Invalid Token!" });
+    return res.status(403).send({ status: "FAILED", message: "Invalid Token!" });
   }
   next();
 };

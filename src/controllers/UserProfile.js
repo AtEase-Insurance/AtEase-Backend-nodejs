@@ -29,6 +29,7 @@ exports.editProfile = async (req, res) => {
     await user.save();
     res.status(200).json({
       status: "SUCCESS",
+      message: "Your profile has been updated",
       user: user,
     });
   } catch (err) {
@@ -62,7 +63,7 @@ exports.changePassword = async (req, res) => {
 
   res.status(200).json({
     status: "SUCCESS",
-    msg: "Your password has been updated!",
+    message: "Your password has been updated!",
     user,
   });
 };

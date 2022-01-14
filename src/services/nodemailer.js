@@ -68,7 +68,8 @@ exports.sendVerificationEmail = ({ _id, email }, res) => {
               // email sent and verification record saved
               res.status(200).json({
                 status: "PENDING",
-                message: "Verification email sent",
+                message:
+                  "A verification link has been sent to your email. Please click the link to verify your account",
               });
             })
             .catch((err) => {

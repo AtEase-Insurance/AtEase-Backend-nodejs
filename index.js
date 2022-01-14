@@ -7,7 +7,7 @@ const { connectDatabase } = require("./config/database.js");
 const { testNodemailer } = require("./src/services/nodemailer");
 
 // Import Authorization Middleware
-const authorize = require("./src/middlewares/Auth");
+const authorize = require("./src/middlewares/auth");
 
 // Connect database, app listen, test node mailer
 connectDatabase(app);
@@ -21,7 +21,7 @@ app.use(cookieParser()); // Use cookies to set access token
 app.use(express.urlencoded({ extended: true }));
 
 // Import routes
-const userRoutes = require("./src/routes/User");
+const userRoutes = require("./src/routes/user");
 
 // Set test page
 app.get("/", (req, res) => {

@@ -16,6 +16,9 @@ const userSchema = new Schema({
   },
   email: {
     type: String,
+    lowercase: true,
+    // match:
+    //   /[a-z0–9!#$%&’*+/=?^_`{|}~-]+(?:\.[a-z0–9!#$%&’*+/=?^_`{|}~-]+)*@(?:[a-z0–9](?:[a-z0–9-]*[a-z0–9])?\.)+[a-z0–9](?:[a-z0–  9-]*[a-z0–9])?/,
     required: true,
     max: 255,
     trim: true,
@@ -27,6 +30,10 @@ const userSchema = new Schema({
     maxlength: 128,
   },
   phoneNo: {
+    type: String,
+    default: "",
+  },
+  avatar: {
     type: String,
     default: "",
   },

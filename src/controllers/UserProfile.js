@@ -1,6 +1,7 @@
-const User = require("../models/User");
+const User = require("../models/user");
 const bcrypt = require("bcryptjs");
-const userValidation = require("../validations/User");
+const userValidation = require("../validations/user");
+const cloudinary = require("../services/cloudinary");
 
 // getProfile
 exports.getProfile = async (req, res) => {
@@ -38,11 +39,51 @@ exports.editProfile = async (req, res) => {
   }
 };
 
+// uploadAvatar
+exports.uploadAvatar = async (req, res) => {
+  try {
+    let user = await User.findById(req.user.id);
+
+    // Check that profile picture is attached
+    if (req.file == undefined)
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "Please attach picture!" });
+
+    // Upload profile picture to Cloudinary
+    const result = async (path) => await cloudinary.uploads(path, "avatar");
+    let url = "";
+
+    if (req.method === "POST") {
+      const file = req.file;
+
+      const { path } = file;
+      const newPath = await result(path);
+      url = newPath.url;
+    }
+
+    user.avatar = url;
+
+    await user.save();
+    res.status(200).json({
+      status: "SUCCESS",
+      message: "Your profile photo has been updated",
+      user: user,
+    });
+  } catch (err) {
+    res.status(500).json(err);
+    console.log(err);
+  }
+};
+
 // changePassword
 exports.changePassword = async (req, res) => {
   // validate request body
   const { error } = userValidation.passwordChange(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error)
+    return res
+      .status(400)
+      .json({ status: "FAILED", message: error.details[0].message });
 
   // Check if user's old password is correct
   let user = await User.findById(req.user.id);

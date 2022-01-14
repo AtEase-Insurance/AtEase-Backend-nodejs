@@ -1,8 +1,8 @@
-const User = require("../models/User");
+const User = require("../models/user");
 const UserVerification = require("../models/userVerification");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const userValidation = require("../validations/User");
+const userValidation = require("../validations/user");
 require("dotenv").config(); // Setup Environment Variables
 
 const { sendVerificationEmail } = require("../services/nodemailer");
@@ -12,7 +12,10 @@ exports.signUp = async (req, res) => {
   try {
     // validate before creating new user account
     const { error } = userValidation.signUp(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    if (error)
+      return res
+        .status(400)
+        .json({ status: "FAILED", message: error.details[0].message });
 
     let { firstname, surname, email, password } = req.body;
 
@@ -29,6 +32,22 @@ exports.signUp = async (req, res) => {
         .json({ status: "FAILED", message: "Password does not match!" });
     }
 
+    // Check that profile picture is attached
+    if (req.file == undefined) {
+      // Upload profile picture to Cloudinary
+      const result = async (path) => await cloudinary.uploads(path, "avatar");
+      let url = "";
+
+      if (req.method === "POST") {
+        const file = req.file;
+
+        const { path } = file;
+        const newPath = await result(path);
+        url = newPath.url;
+      }
+      user.avatar = url;
+    }
+
     // Hash passwords
     const salt = 10;
     password = await bcrypt.hash(password, salt);
@@ -39,6 +58,7 @@ exports.signUp = async (req, res) => {
       surname,
       email,
       password,
+      avatar,
       verified: false,
     });
     await user.save();
@@ -107,7 +127,10 @@ exports.verifyEmail = async (req, res) => {
 exports.logIn = async (req, res) => {
   // validate the entered user data
   const { error } = userValidation.logIn(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error)
+    return res
+      .status(400)
+      .json({ status: "FAILED", message: error.details[0].message });
 
   let { email, password } = req.body;
 
@@ -136,7 +159,7 @@ exports.logIn = async (req, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
   // Assign token and send user details
-  res.cookie("auth_token", token).status(200).json({
+  res.cookie("auth_token", token, { httpOnly: true }).status(200).json({
     status: "SUCCESS",
     message: "Logged in successfully!",
     user: user,

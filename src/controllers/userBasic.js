@@ -134,7 +134,8 @@ exports.logIn = async (req, res) => {
   if (user.verified == false) {
     return res.status(400).json({
       status: "FAILED",
-      message: "Your email hasn't been verified yet. Please check your inbox!",
+      message:
+        "Your account hasn't been verified yet. Please check your email inbox!",
     });
   }
 

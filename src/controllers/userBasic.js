@@ -124,19 +124,19 @@ exports.logIn = async (req, res) => {
       .status(400)
       .json({ status: "FAILED", message: "Invalid email or password." });
 
-  if (user.verified == false) {
-    return res.status(400).json({
-      status: "FAILED",
-      msg: "Email hasn't been verified yet. Check your inbox!",
-    });
-  }
-
   // Check if password is correct
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword)
     return res
       .status(400)
       .json({ status: "FAILED", message: "Invalid email or password." });
+
+  if (user.verified == false) {
+    return res.status(400).json({
+      status: "FAILED",
+      message: "Your email hasn't been verified yet. Please check your inbox!",
+    });
+  }
 
   // Create a token
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);

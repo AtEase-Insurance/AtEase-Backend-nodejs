@@ -32,22 +32,6 @@ exports.signUp = async (req, res) => {
         .json({ status: "FAILED", message: "Password does not match!" });
     }
 
-    // Check that profile picture is attached
-    if (req.file == undefined) {
-      // Upload profile picture to Cloudinary
-      const result = async (path) => await cloudinary.uploads(path, "avatar");
-      let url = "";
-
-      if (req.method === "POST") {
-        const file = req.file;
-
-        const { path } = file;
-        const newPath = await result(path);
-        url = newPath.url;
-      }
-      user.avatar = url;
-    }
-
     // Hash passwords
     const salt = 10;
     password = await bcrypt.hash(password, salt);
@@ -58,7 +42,6 @@ exports.signUp = async (req, res) => {
       surname,
       email,
       password,
-      avatar,
       verified: false,
     });
     await user.save();

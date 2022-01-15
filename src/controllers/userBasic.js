@@ -55,56 +55,56 @@ exports.signUp = async (req, res) => {
 };
 
 // Verify email
-exports.verifyEmail = async (req, res) => {
-  try {
-    let { userId, uniqueString } = req.params;
+// exports.verifyEmail = async (req, res) => {
+//   try {
+//     let { userId, uniqueString } = req.params;
 
-    const userVerificationExists = await UserVerification.findOne({ userId });
-    if (userVerificationExists) {
-      // user verification exists so we proceed
-      const { expiresAt } = userVerificationExists;
-      const hashedUniqueString = userVerificationExists.uniqueString;
+//     const userVerificationExists = await UserVerification.findOne({ userId });
+//     if (userVerificationExists) {
+//       // user verification exists so we proceed
+//       const { expiresAt } = userVerificationExists;
+//       const hashedUniqueString = userVerificationExists.uniqueString;
 
-      // checking for expired unique string
-      if (expiresAt < Date.now()) {
-        // record has expired so we delete it
-        await UserVerification.deleteOne({ userId });
-        await User.deleteOne({ _id: userId });
-        return res.status(400).json({
-          status: "FAILED",
-          message: "Link has expired. Please sign up again.",
-        });
-      } else {
-        // valid record exists so we validate the user
-        // first compare the hashed unique string
-        const uniqueStringMatches = await bcrypt.compare(
-          uniqueString,
-          hashedUniqueString
-        );
+//       // checking for expired unique string
+//       if (expiresAt < Date.now()) {
+//         // record has expired so we delete it
+//         await UserVerification.deleteOne({ userId });
+//         await User.deleteOne({ _id: userId });
+//         return res.status(400).json({
+//           status: "FAILED",
+//           message: "Link has expired. Please sign up again.",
+//         });
+//       } else {
+//         // valid record exists so we validate the user
+//         // first compare the hashed unique string
+//         const uniqueStringMatches = await bcrypt.compare(
+//           uniqueString,
+//           hashedUniqueString
+//         );
 
-        if (uniqueStringMatches) {
-          await User.updateOne({ _id: userId }, { verified: true });
-          await UserVerification.deleteOne({ userId });
+//         if (uniqueStringMatches) {
+//           await User.updateOne({ _id: userId }, { verified: true });
+//           await UserVerification.deleteOne({ userId });
 
-          return res.status(200).json({
-            status: "SUCCESS",
-            message: "User has been verified",
-          });
-        }
-      }
-    } else {
-      // user verification record doesn't exist
-      let message =
-        "Account record doesn't exist or has already been verified. Please sign up or log in.";
-      res.redirect(`/user/verified/error=true&message=${message}`);
-    }
-  } catch (err) {
-    console.log(err);
-    let message =
-      "An error occured while checking for existing user verification record";
-    res.redirect(`/user/verified/error=true&message=${message}`);
-  }
-};
+//           return res.status(200).json({
+//             status: "SUCCESS",
+//             message: "User has been verified",
+//           });
+//         }
+//       }
+//     } else {
+//       // user verification record doesn't exist
+//       let message =
+//         "Account record doesn't exist or has already been verified. Please sign up or log in.";
+//       res.redirect(`/user/verified/error=true&message=${message}`);
+//     }
+//   } catch (err) {
+//     console.log(err);
+//     let message =
+//       "An error occured while checking for existing user verification record";
+//     res.redirect(`/user/verified/error=true&message=${message}`);
+//   }
+// };
 
 // Login
 exports.logIn = async (req, res) => {
@@ -124,20 +124,19 @@ exports.logIn = async (req, res) => {
       .status(400)
       .json({ status: "FAILED", message: "Invalid email or password." });
 
+  if (user.verified == false) {
+    return res.status(400).json({
+      status: "FAILED",
+      msg: "Email hasn't been verified yet. Check your inbox!",
+    });
+  }
+
   // Check if password is correct
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword)
     return res
       .status(400)
       .json({ status: "FAILED", message: "Invalid email or password." });
-
-  if (user.verified == false) {
-    return res.status(400).json({
-      status: "FAILED",
-      message:
-        "Your account hasn't been verified yet. Please check your email inbox!",
-    });
-  }
 
   // Create a token
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);

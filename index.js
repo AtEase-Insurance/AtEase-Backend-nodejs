@@ -23,6 +23,10 @@ app.use(express.urlencoded({ extended: true }));
 // Import routes
 const userBasicRoutes = require("./src/routes/userBasic");
 const userProfileRoutes = require("./src/routes/userProfile");
+const verifyUser = require("./src/routes/verifyUser");
+
+// set the view engine to ejs
+app.set("view engine", "ejs");
 
 // Set test page
 app.get("/", (req, res) => {
@@ -31,4 +35,5 @@ app.get("/", (req, res) => {
 
 // Set base routes
 app.use("/user", userBasicRoutes);
+app.use("/user/verify", verifyUser);
 app.use("/user/profile", auth, userProfileRoutes);

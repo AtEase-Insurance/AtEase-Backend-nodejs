@@ -1,7 +1,6 @@
 const router = require("express").Router();
 
 const userBasic = require("../controllers/userBasic");
-const { verifyEmail } = "./src/controllers/verifyEmail";
 const upload = require("../middlewares/multer");
 
 // Basic Routes (Unprotected)

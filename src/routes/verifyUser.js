@@ -5,8 +5,6 @@ const UserVerification = require("../models/userVerification");
 const bcrypt = require("bcryptjs");
 require("dotenv").config(); // Setup Environment Variables
 
-// 61e2d8b98e9694c4b34fcd6a
-
 // Verify User
 router.get("/:userId/:uniqueString", async (req, res) => {
   let { userId, uniqueString } = req.params;

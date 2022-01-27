@@ -1,10 +1,16 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
+const User = require("../models/user");
+const Enquiry = require("../models/enquiry");
+const {
+  sendVerificationEmail,
+  sendPasswordResetEmail,
+  receiveEnquiryEmail,
+  sendEnquiryEmail,
+} = require("../services/mailOptions/mailControllers");
 const userValidation = require("../validations/user");
 require("dotenv").config(); // Setup Environment Variables
-
-const { sendVerificationEmail } = require("../services/nodemailer");
 
 // Signup
 exports.signUp = async (req, res) => {
@@ -102,4 +108,59 @@ exports.logOut = (req, res) => {
     .clearCookie("auth_token")
     .status(200)
     .json({ status: "SUCCESS", message: "Logged out successfully!" });
+};
+
+// Send Password Reset Link
+exports.sendPasswordResetLink = async (req, res) => {
+  let { email } = req.body;
+
+  try {
+    // Check if account exists in database
+    const emailExists = await User.findOne({ email });
+
+    if (!emailExists)
+      return res
+        .status(400)
+        .json({ status: "FAILED", message: "Email doesn't exist!" });
+
+    if (emailExists) {
+      sendPasswordResetEmail({ _id: emailExists._id, email }, res);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// Send User Enquiries
+exports.sendEnquiry = async (req, res) => {
+  try {
+    // validate the entered enquiry data
+    const { error } = userValidation.enquiry(req.body);
+    if (error)
+      return res
+        .status(400)
+        .json({ status: "FAILED", message: error.details[0].message });
+
+    let { name, email, phoneNo, message } = req.body;
+
+    // Create enquiry and store in database
+    const enquiry = new Enquiry({
+      name,
+      email,
+      phoneNo,
+      message,
+    });
+    await enquiry.save();
+
+    // send enquiry email to user and our email for CRM purposes
+    sendEnquiryEmail({ enquiry });
+    receiveEnquiryEmail({ enquiry });
+    return res.status(200).json({
+      status: "SUCCESS",
+      message: "Customer enquiry sent and confirmed.",
+    });
+  } catch (err) {
+    res.status(500).json(err);
+    console.log(err);
+  }
 };

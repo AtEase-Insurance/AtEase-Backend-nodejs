@@ -4,7 +4,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 const { connectDatabase } = require("./config/database.js");
-const { testNodemailer } = require("./src/services/nodemailer");
+const { testNodemailer } = require("./src/services/mailOptions/mailControllers");
 
 // Import Authorization Middleware
 const auth = require("./src/middlewares/auth");
@@ -35,5 +35,5 @@ app.get("/", (req, res) => {
 
 // Set base routes
 app.use("/user", userBasicRoutes);
-app.use("/user/verify", verifyUser);
+app.use("/user/verification", verifyUser);
 app.use("/user/profile", auth, userProfileRoutes);

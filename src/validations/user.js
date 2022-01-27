@@ -33,3 +33,15 @@ exports.passwordChange = (user) => {
 
   return schema.validate(user);
 };
+
+// Enquiry
+exports.enquiry = (enquiry) => {
+  const schema = Joi.object({
+    name: Joi.string().min(2).max(50).required(),
+    email: Joi.string().min(2).max(255).required().email(),
+    phoneNo: Joi.string().min(2).max(50).required(),
+    message: Joi.string().min(2).max(1000).required(),
+  });
+
+  return schema.validate(enquiry);
+};

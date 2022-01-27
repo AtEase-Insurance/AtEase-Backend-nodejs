@@ -2,6 +2,9 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const userValidation = require("../validations/user");
 const cloudinary = require("../services/cloudinary");
+const {
+  passwordChangedEmail,
+} = require("../services/mailOptions/mailControllers");
 
 // getProfile
 exports.getProfile = async (req, res) => {
@@ -78,33 +81,38 @@ exports.uploadAvatar = async (req, res) => {
 
 // changePassword
 exports.changePassword = async (req, res) => {
-  // validate request body
-  const { error } = userValidation.passwordChange(req.body);
-  if (error)
-    return res
-      .status(400)
-      .json({ status: "FAILED", message: error.details[0].message });
+  try {
+    // validate request body
+    const { error } = userValidation.passwordChange(req.body);
+    if (error)
+      return res
+        .status(400)
+        .json({ status: "FAILED", message: error.details[0].message });
 
-  // Check if user's old password is correct
-  let user = await User.findById(req.user.id);
-  const validPassword = await bcrypt.compare(
-    req.body.oldPassword,
-    user.password
-  );
-  if (!validPassword)
-    return res.status(400).json({
-      status: "FAILED",
-      message: "Invalid Old Password.",
+    // Check if user's old password is correct
+    let user = await User.findById(req.user.id);
+    const validPassword = await bcrypt.compare(
+      req.body.oldPassword,
+      user.password
+    );
+    if (!validPassword)
+      return res.status(400).json({
+        status: "FAILED",
+        message: "Invalid Old Password.",
+      });
+
+    // Hash new password and replace
+    const password = await bcrypt.hash(req.body.newPassword, 12);
+    user.password = password;
+    await user.save();
+    passwordChangedEmail({ email: user.email });
+
+    res.status(200).json({
+      status: "SUCCESS",
+      message: "Your password has been updated!",
+      user,
     });
-
-  // Hash new password and replace
-  const password = await bcrypt.hash(req.body.newPassword, 12);
-  user.password = password;
-  await user.save();
-
-  res.status(200).json({
-    status: "SUCCESS",
-    message: "Your password has been updated!",
-    user,
-  });
+  } catch (err) {
+    console.log(err);
+  }
 };

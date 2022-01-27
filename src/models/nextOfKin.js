@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const userSchema = new Schema({
+const nextOfKinSchema = new Schema({
   firstname: {
     type: String,
     required: true,
@@ -21,28 +21,42 @@ const userSchema = new Schema({
     max: 255,
     trim: true,
   },
-  password: {
+  homeAddress: {
     type: String,
     required: true,
     minlength: 6,
     maxlength: 128,
+    trim: true,
   },
   phoneNo: {
     type: String,
-    default: "",
+    required: true,
   },
-  avatar: {
+  relationship: {
     type: String,
-    default: "",
+    required: true,
   },
-  dateSignedUp: {
-    type: Date,
-    default: Date.now(),
+  meansOfId: {
+    type: String,
+    default: true,
+  },
+  imgForId: {
+    type: String,
+    required: true,
   },
   verified: {
     type: Boolean,
     required: true,
   },
+  date: {
+    type: Date,
+    default: Date.now(),
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("NextOfKin", nextOfKinSchema);

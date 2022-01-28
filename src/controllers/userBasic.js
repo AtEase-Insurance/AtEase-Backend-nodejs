@@ -141,13 +141,14 @@ exports.sendEnquiry = async (req, res) => {
         .status(400)
         .json({ status: "FAILED", message: error.details[0].message });
 
-    let { name, email, phoneNo, message } = req.body;
+    let { name, email, phoneNo, subject, message } = req.body;
 
     // Create enquiry and store in database
     const enquiry = new Enquiry({
       name,
       email,
       phoneNo,
+      subject,
       message,
     });
     await enquiry.save();

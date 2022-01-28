@@ -69,11 +69,22 @@ router.get("/signup/:userId/:uniqueString", async (req, res) => {
 
 // Reset Password
 router.post("/password/reset", async (req, res) => {
-  let { userId, otp, newPassword } = req.body;
+  let { email, otp, newPassword } = req.body;
 
   try {
-    let message = "";
-    const otpVerificationExists = await OtpVerification.findOne({ userId });
+    let userExists = await User.findOne(email);
+
+    if (!userExists) {
+      return res.status(400).json({
+        status: "FAILED",
+        message:
+          "Account record doesn't exist. Please sign up or provide valid email.",
+      });
+    }
+
+    const otpVerificationExists = await OtpVerification.findOne({
+      userId: userExists._id,
+    });
 
     // user verification record doesn't exist
     if (!otpVerificationExists) {

@@ -16,7 +16,7 @@ exports.verifyEmail = ({ currentUrl, _id, email, uniqueString }) => ({
 });
 
 // Send password reset link to user email on request through forgot password
-exports.resetPassword = ({ currentUrl, _id, email, otp }) => ({
+exports.resetPassword = ({ currentUrl, email, otp }) => ({
   from: process.env.CURRENT_EMAIL,
   to: email,
   subject: "Reset Your Password",
@@ -24,7 +24,7 @@ exports.resetPassword = ({ currentUrl, _id, email, otp }) => ({
            <p>This is your OTP:</p>
            <h1>${otp}</h1>
            <p>Click <a href=${
-             currentUrl + "/reset/password/" + _id
+             currentUrl + "/resetpassword"
            }>here</a> to proceed to reset your password.</p>
            `,
 });

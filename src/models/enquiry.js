@@ -8,6 +8,12 @@ const enquirySchema = new Schema({
     required: true,
     trim: true,
   },
+  subject: {
+    type: String,
+    max: 255,
+    required: true,
+    trim: true,
+  },
   email: {
     type: String,
     lowercase: true,

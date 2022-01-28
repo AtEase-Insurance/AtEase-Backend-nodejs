@@ -39,6 +39,7 @@ exports.enquiry = (enquiry) => {
   const schema = Joi.object({
     name: Joi.string().min(2).max(50).required(),
     email: Joi.string().min(2).max(255).required().email(),
+    subject: Joi.string().min(2).max(50).required(),
     phoneNo: Joi.string().min(2).max(50).required(),
     message: Joi.string().min(2).max(1000).required(),
   });

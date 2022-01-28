@@ -36,12 +36,13 @@ exports.receiveEnquiry = ({ enquiry }) => ({
   subject: `Enquiry from ${enquiry.name}`,
   html: ` <h2>Enquiry from ${enquiry.name}.</h2>
           <p></p>
-          <h4>Details:</h4>
+          <h3>Details</h3>
           <p><b>Name: </b>${enquiry.name}</p>
+          <p><b>Subject: </b>${enquiry.subject}</p>
           <p><b>Email: </b>${enquiry.email}</p>
           <p><b>Phone No: </b>${enquiry.phoneNo}</p>
           <p><b>Message: </b>${enquiry.message}</p>
-        `,
+          `,
 });
 
 // Send user confirmation of enquiry sent
@@ -51,8 +52,9 @@ exports.enquirySent = ({ enquiry }) => ({
   subject: `Your Enquiry to AtEase Insurance Was Lodged.`,
   html: ` <h2>Your Enquiry to AtEase Insurance.</h2>
           <p></p>
-          <h4>Details:</h4>
+          <h3>Details</h3>
           <p><b>Name: </b>${enquiry.name}</p>
+          <p><b>Subject: </b>${enquiry.subject}</p>
           <p><b>Email: </b>${enquiry.email}</p>
           <p><b>Phone No: </b>${enquiry.phoneNo}</p>
           <p><b>Message: </b>${enquiry.message}</p>

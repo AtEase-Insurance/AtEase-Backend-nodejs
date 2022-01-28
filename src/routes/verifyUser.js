@@ -5,6 +5,7 @@ require("dotenv").config(); // Setup Environment Variables
 const User = require("../models/user");
 const UserVerification = require("../models/userVerification");
 const OtpVerification = require("../models/otpVerification");
+const userValidation = require("../validations/user");
 const {
   signupSuccessfulEmail,
   passwordChangedEmail,
@@ -69,6 +70,13 @@ router.get("/signup/:userId/:uniqueString", async (req, res) => {
 
 // Reset Password
 router.post("/password/reset", async (req, res) => {
+  // validate before creating new user account
+  const { error } = userValidation.resetPassword(req.body);
+  if (error)
+    return res
+      .status(400)
+      .json({ status: "FAILED", message: error.details[0].message });
+
   let { email, otp, newPassword } = req.body;
 
   try {

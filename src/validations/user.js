@@ -46,3 +46,15 @@ exports.enquiry = (enquiry) => {
 
   return schema.validate(enquiry);
 };
+
+// Enquiry
+exports.resetPassword = (user) => {
+  const schema = Joi.object({
+    otp: Joi.string().min(2).max(50).required(),
+    email: Joi.string().min(2).max(255).required().email(),
+    newPassword: Joi.string().min(6).max(255).required(),
+    confirmNewPassword: Joi.string().required().valid(Joi.ref("newPassword")),
+  });
+
+  return schema.validate(user);
+};

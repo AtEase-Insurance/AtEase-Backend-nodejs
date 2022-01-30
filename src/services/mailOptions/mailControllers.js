@@ -85,7 +85,7 @@ exports.sendVerificationEmail = ({ _id, email }, res) => {
 };
 
 // send password reset email
-exports.sendPasswordResetEmail = ({ _id, email }, res) => {
+exports.sendPasswordResetEmail = async ({ _id, email }, res) => {
   const currentUrl = process.env.CURRENT_FRONTEND_URL;
   // Generate new unique otp
   const otp = otpGenerator.generate(6, {
@@ -97,51 +97,41 @@ exports.sendPasswordResetEmail = ({ _id, email }, res) => {
   // mail options
   const mailOptions = resetPassword({ currentUrl, _id, email, otp });
 
-  // hash the uniqueString
-  const saltRounds = 10;
-  bcrypt
-    .hash(otp, saltRounds)
-    .then((hashedOtp) => {
-      const newVerification = new OtpVerification({
-        userId: _id,
-        otp: hashedOtp,
-        createdAt: Date.now(),
-        expiresAt: Date.now() + 600000,
-      });
+  // hash the unique otp
+  const saltRounds = 12;
+  const hashedOtp = await bcrypt.hash(otp, saltRounds);
 
-      newVerification
-        .save()
-        .then(() => {
-          transporter
-            .sendMail(mailOptions)
-            .then(() => {
-              // email sent and password reset verification record saved
-              res.status(200).json({
-                status: "PENDING",
-                message: "A one-time-password has been sent to your email.",
-              });
-            })
-            .catch((err) => {
-              console.log(err);
-              res.status(400).json({
-                status: "FAILED",
-                message: "Password reset email failed.",
-              });
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          res.status(400).json({
-            status: "FAILED",
-            message: "Couldn't save password reset email data!",
-          });
-        });
+  // Check if otpVerification exists
+  const otpVerificationExists = await OtpVerification.findOne({ userId: _id });
+  if (otpVerificationExists) {
+    // update the otp in the existing document
+    otpVerificationExists.otp = hashedOtp;
+    await otpVerificationExists.save();
+  } else {
+    // create a new otp document
+    const newVerification = new OtpVerification({
+      userId: _id,
+      otp: hashedOtp,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 600000,
+    });
+    await newVerification.save();
+  }
+
+  transporter
+    .sendMail(mailOptions)
+    .then(() => {
+      // email sent and password reset verification record saved
+      res.status(200).json({
+        status: "SUCCESS",
+        message: "A one-time-password has been sent to your email.",
+      });
     })
     .catch((err) => {
       console.log(err);
       res.status(400).json({
         status: "FAILED",
-        message: "An error occured while hashing email data!",
+        message: "Failed to send password reset email.",
       });
     });
 };

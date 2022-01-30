@@ -70,36 +70,24 @@ router.get("/signup/:userId/:uniqueString", async (req, res) => {
 
 // Reset Password
 router.post("/password/reset", async (req, res) => {
-  // validate before creating new user account
+  // validate before creating new password
   const { error } = userValidation.resetPassword(req.body);
   if (error)
     return res
       .status(400)
       .json({ status: "FAILED", message: error.details[0].message });
 
-  let { email, otp, newPassword } = req.body;
+  let { userId, otp, newPassword } = req.body;
 
   try {
-    let userExists = await User.findOne(email);
-
-    if (!userExists) {
-      return res.status(400).json({
-        status: "FAILED",
-        message:
-          "Account record doesn't exist. Please sign up or provide valid email.",
-      });
-    }
-
-    const otpVerificationExists = await OtpVerification.findOne({
-      userId: userExists._id,
-    });
-
+    const otpVerificationExists = await OtpVerification.findOne({ userId });
+    
     // user verification record doesn't exist
     if (!otpVerificationExists) {
       return res.status(400).json({
         status: "FAILED",
         message:
-          "Account record doesn't exist. Please sign up or provide valid email.",
+          "Account record doesn't exist. Request a new OTP.",
       });
     }
 
@@ -113,7 +101,7 @@ router.post("/password/reset", async (req, res) => {
       await OtpVerification.deleteOne({ userId });
       return res.status(400).json({
         status: "FAILED",
-        message: "OTP has expired. Try again to resend password reset email.",
+        message: "OTP has expired. Request a new OTP.",
       });
     }
 
@@ -125,18 +113,12 @@ router.post("/password/reset", async (req, res) => {
       return res.status(400).json({
         status: "FAILED",
         message:
-          "Account record doesn't match. Request to resend password reset email.",
+          "Account record doesn't match. Request a new OTP.",
       });
     }
 
     if (otpMatches) {
       let user = await User.findById(userId);
-      if (!user) {
-        return res.status(400).json({
-          status: "FAILED",
-          message: "Cannot find user record.",
-        });
-      }
 
       // Hash new password and replace
       const password = await bcrypt.hash(newPassword, 12);

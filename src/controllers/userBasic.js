@@ -38,7 +38,7 @@ exports.signUp = async (req, res) => {
     }
 
     // Hash passwords
-    const salt = 10;
+    const salt = 12;
     password = await bcrypt.hash(password, salt);
 
     // Create user account and store in database

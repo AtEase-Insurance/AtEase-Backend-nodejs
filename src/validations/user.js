@@ -26,8 +26,8 @@ exports.logIn = (user) => {
 // Password Change
 exports.passwordChange = (user) => {
   const schema = Joi.object({
-    oldPassword: Joi.string().min(6).max(255).required(),
-    newPassword: Joi.string().min(6).max(255).required(),
+    oldPassword: Joi.string().max(255).required(),
+    newPassword: Joi.string().min(8).max(255).required(),
     confirmNewPassword: Joi.string().required().valid(Joi.ref("newPassword")),
   }).unknown();
 
@@ -50,9 +50,9 @@ exports.enquiry = (enquiry) => {
 // Enquiry
 exports.resetPassword = (user) => {
   const schema = Joi.object({
-    otp: Joi.string().min(2).max(50).required(),
-    email: Joi.string().min(2).max(255).required().email(),
-    newPassword: Joi.string().min(6).max(255).required(),
+    otp: Joi.string().min(6).max(6).required(),
+    userId: Joi.string().max(255).required(),
+    newPassword: Joi.string().min(8).max(255).required(),
     confirmNewPassword: Joi.string().required().valid(Joi.ref("newPassword")),
   });
 

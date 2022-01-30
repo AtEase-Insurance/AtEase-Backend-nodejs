@@ -24,7 +24,7 @@ exports.resetPassword = ({ currentUrl, email, otp, _id }) => ({
            <p>This is your OTP:</p>
            <h1>${otp}</h1>
            <p>Click <a href=${
-             currentUrl + "/resetpassword/" + _id
+             currentUrl + "/resetpassword/" + _id + "/" + otp
            }>here</a> to proceed to reset your password.</p>
            `,
 });
